@@ -146,12 +146,121 @@ function renderUserPage(user: { id: string, name: string, email: string, role: s
         <li><strong>Função:</strong> ${user.role}</li>
         <li><strong>Saldo:</strong> R$ ${user.balance}</li>
       </ul>
+      <button id="criar-transacao">Criar Transação</button>
+      <button id="view-transactions">View Transactions</button>
       <button id="logout">Logout</button>
+      <div id="transacao-form-container"></div>
+      <div id="transactions-list-container"></div>
     `;
     document.getElementById('logout')?.addEventListener('click', () => {
       jwtToken = null;
       renderHome();
     });
+    document.getElementById('criar-transacao')?.addEventListener('click', renderTransactionForm);
+    document.getElementById('view-transactions')?.addEventListener('click', fetchAndRenderTransactions);
+  }
+}
+
+function renderTransactionForm() {
+  const container = document.getElementById('transacao-form-container');
+  if (container) {
+    container.innerHTML = `
+      <h3>Criar Transação</h3>
+      <form id="transacao-form">
+        <input type="email" id="destino-email" placeholder="Email de destino" required />
+        <input type="number" id="valor" placeholder="Valor" required min="0.01" step="0.01" />
+        <button type="submit">Enviar</button>
+      </form>
+    `;
+    document.getElementById('transacao-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const destinoEmailInput = document.getElementById('destino-email') as HTMLInputElement;
+      const valorInput = document.getElementById('valor') as HTMLInputElement;
+      const destination = destinoEmailInput.value;
+      const amount = parseFloat(valorInput.value);
+      if (!jwtToken) {
+        alert('Token não encontrado. Faça login novamente.');
+        renderLogin();
+        return;
+      }
+      try {
+        const response = await fetch(`${API_URL}/transaction`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`
+          },
+          body: JSON.stringify({ destination, amount })
+        });
+        if (response.ok) {
+          alert('Transação realizada com sucesso!');
+          // Aqui você pode atualizar o saldo ou recarregar os dados do usuário
+        } else {
+          alert('Falha ao criar transação: ' + response.status);
+        }
+      } catch (error) {
+        alert('Erro ao criar transação: ' + error);
+      }
+    });
+  }
+}
+
+async function fetchAndRenderTransactions() {
+  if (!jwtToken) {
+    alert('Token não encontrado. Faça login novamente.');
+    renderLogin();
+    return;
+  }
+  try {
+    const response = await fetch(`${API_URL}/transaction`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`
+      }
+    });
+    if (response.ok) {
+      const transactions = await response.json();
+      renderTransactionsList(transactions);
+    } else {
+      alert('Erro ao buscar transações: ' + response.status);
+    }
+  } catch (error) {
+    alert('Erro ao buscar transações: ' + error);
+  }
+}
+
+function renderTransactionsList(transactions: Array<{ id: number, source: string, destination: string, amount: number, status: string }>) {
+  const container = document.getElementById('transactions-list-container');
+  if (container) {
+    if (!transactions.length) {
+      container.innerHTML = '<p>Nenhuma transação encontrada.</p>';
+      return;
+    }
+    container.innerHTML = `
+      <h3>Transações</h3>
+      <table border="1" style="width:100%;text-align:center;">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Remetente</th>
+            <th>Destinatário</th>
+            <th>Valor</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${transactions.map(t => `
+            <tr>
+              <td>${t.id}</td>
+              <td>${t.source}</td>
+              <td>${t.destination}</td>
+              <td>R$ ${t.amount}</td>
+              <td>${t.status}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
   }
 }
 
