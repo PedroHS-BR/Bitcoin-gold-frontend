@@ -3,9 +3,11 @@
     "target": "ES6",
     "lib": ["DOM", "ES2015"],
     "module": "ES6",
-    "outDir": "./",
+    "outDir": "./dist",
     "strict": true
   },
-  "include": ["./**/*.ts"],        // Inclui todos os .ts do projeto
-  "exclude": ["node_modules"]      // Exclui apenas o que é necessário
-}
+  "include": ["./**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+} 
+
+//    http-server .

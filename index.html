@@ -1,31 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Bitcoin Gold SPA</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Site com TypeScript</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="loginView" class="view">
-  <h2>Login</h2>
-  <form id="loginForm">
-    <input type="email" id="email" placeholder="Email" required />
-    <input type="password" id="password" placeholder="Senha" required />
-    <button type="submit">Entrar</button>
-    <p class="error" id="loginError"></p>
-  </form>
-</div>
-
-<div id="dashboardView" class="view hidden">
-  <h2>Bem-vindo!</h2>
-  <p><strong>ID:</strong> <span id="userId"></span></p>
-  <p><strong>Nome:</strong> <span id="userName"></span></p>
-  <p><strong>Email:</strong> <span id="userEmail"></span></p>
-  <p><strong>Role:</strong> <span id="userRole"></span></p>
-  <p><strong>Saldo:</strong> R$ <span id="userBalance"></span></p>
-  <button id="logoutButton">Sair</button>
-</div>
-
-<script src="app.js"></script>
+  <div id="app">
+    <h1>Bem-vindo ao Meu Site!</h1>
+    <button id="btn">CONECTAR</button>
+  </div>
+  <script src="dist/app.js"></script>
 </body>
-</html>
+</html> 
